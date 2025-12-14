@@ -40,7 +40,12 @@ A light-guided piano that teaches users to play Christmas carols without reading
 
 ### Arduino Sketch
 
-The main codebase is located in `away_in_a_manger_2025/away_in_a_manger_2025.ino`.
+The main sketch is located in `illuminote/illuminote.ino`. Songs are stored as header files in `illuminote/songs/`.
+
+To change songs, edit the `#include` directive in `illuminote.ino`:
+```cpp
+#include "songs/away_in_a_manger.h"
+```
 
 **Key Libraries:**
 - `MIDIUSB` - USB MIDI communication
@@ -95,15 +100,16 @@ This outputs a comma-separated list of MIDI note numbers ready to paste into the
 
 ```
 illuminote/
-├── away_in_a_manger_2025/     # Current Arduino sketch
-│   └── away_in_a_manger_2025.ino
+├── illuminote/                 # Arduino sketch
+│   ├── illuminote.ino          # Main sketch
+│   └── songs/                  # Song header files
+│       └── away_in_a_manger.h
 ├── midi-songs/                 # Song files in various formats
 │   ├── *.mid                   # Original MIDI
 │   ├── *.csv                   # Parsed MIDI data
 │   └── *.txt                   # Note sequences
 ├── lyrics_slides/              # Lyric presentation slides
 │   └── 2020-silent-night.pptx
-├── Samples/                    # Audio samples for Ableton
 ├── *.als                       # Ableton Live project files
 └── README.md
 ```

@@ -1,4 +1,3 @@
-
 #include <Wire.h>
 #include <MIDIUSB.h>
 #include <SparkFun_I2C_Mux_Arduino_Library.h>
@@ -25,27 +24,25 @@ void controlChange(byte channel, byte control, byte value) {
 #define NUM_SENSORS 8
 #define MIDI_NOTES_COUNT 127
 
-#include "song.h"
+// Select song by including the appropriate header file
+#include "songs/away_in_a_manger.h"
 
 QWIICMUX myMux;
 VL53L1X distanceSensors[NUM_SENSORS];
 
-bool sensorActive[NUM_SENSORS] = {false}; // Tracks if a hand is currently covering the sensor
+bool sensorActive[NUM_SENSORS] = {false};
 int mapNoteToLed[MIDI_NOTES_COUNT] = {};
 byte ledStates[MIDI_NOTES_COUNT] = {};
 
 int currentNote = 0;
 
-// --- REPLACEMENT SETUP ---
-void setup()
-{
+void setup() {
   Serial.begin(57600);
   Wire.begin();
 
   // 1. Initialize LEDs
   for (int i = 0; i < NUM_SENSORS; i++) {
     pinMode(ledPins[i], OUTPUT);
-    // AUTOMATIC MAPPING: Map the MIDI note to the specific LED Pin
     mapNoteToLed[notes[i]] = ledPins[i]; 
   }
 
@@ -69,25 +66,23 @@ void setup()
   }
 
   Serial.println("System Online.");
-  resetSong(); // Prepare the first song
+  resetSong();
 }
 
-// --- NEW RESET FUNCTION (Replaces calling setup() recursively) ---
 void resetSong() {
   resetLeds();
   currentNote = 0;
   promptNext();
 }
 
-// --- SAFE LED FUNCTIONS ---
 void ledOn(int pin) {
-  if (pin <= 0) return; // Safety check
+  if (pin <= 0) return;
   digitalWrite(pin, LOW);
   ledStates[pin] = LOW;
 }
 
 void ledOff(int pin) {
-  if (pin <= 0) return; // Safety check
+  if (pin <= 0) return;
   digitalWrite(pin, HIGH);
   ledStates[pin] = HIGH;
 }
@@ -102,29 +97,16 @@ void resetLeds() {
   }
 }
 
-// --- NEW LOGIC HANDLER ---
-// Checks if the triggered sensor matches the required song note
 void checkNoteHit(byte sensorIndex) {
   byte playedNote = notes[sensorIndex];
   byte requiredNote = song[currentNote];
 
-  // Only proceed if the USER hit the CORRECT note
   if (playedNote == requiredNote) {
-    
-    // 1. Play the note (flush is called inside noteOn)
     noteOn(1, playedNote, 100);
-    
-    // 2. Visual Feedback & Logic
-    // Turn OFF the light for the note we just hit
     ledOff(mapNoteToLed[requiredNote]); 
-    
-    // Move to next note
     currentNote++;
-    
-    // 3. Brief delay to prevent double-triggering on fast movements
     delay(30); 
     
-    // 4. Turn on the light for the NEW next note
     if (currentNote < songLength) {
       promptNext();
     }
@@ -132,57 +114,35 @@ void checkNoteHit(byte sensorIndex) {
 }
 
 void promptNext() {
-  // Turn on light for next Note
-  //    Serial.println("||||||||||||||||||||||||||||");
-  //    Serial.print("Next Note LED Pin On: ");
-  //    Serial.print(mapNoteToLed[song[currentNote]]);
-  //    Serial.print(" - Note ");
-  //    Serial.print(currentNote);
-  //    Serial.print(": ");
-  //    Serial.println(song[currentNote]);
-  //    Serial.println("||||||||||||||||||||||||||||");
-
   ledOn(mapNoteToLed[song[currentNote]]);
 
   if (currentNote > 0) {
     if (song[currentNote - 1] != song[currentNote]) {
       ledOff(mapNoteToLed[song[currentNote - 1]]);
     } else {
-      // If the next note is the same as the previous, add a slight delay
       ledOff(mapNoteToLed[song[currentNote - 1]]);
       delay(450);
       ledOn(mapNoteToLed[song[currentNote]]);
     }
   }
-  //  Serial.println("|||||| Exiting promptNext()");
 }
 
-// --- REPLACEMENT LOOP ---
 void loop() {
-  // Check if song is over
   if (currentNote >= songLength) {
-    delay(5000); // Wait 5 seconds
-    resetSong(); // Restart
+    delay(5000);
+    resetSong();
     return;
   }
 
-  // Scan all sensors
   for (byte x = 0; x < NUM_SENSORS; x++) {
     myMux.setPort(x);
-    
-    // Get Distance
     int dist = distanceSensors[x].read();
-    
-    // Determine if hand is present (Threshold: 50mm to 200mm)
     bool handPresent = (dist > 50 && dist < 200);
 
-    // STATE MACHINE LOGIC
-    // We only trigger if the hand wasn't there before ( !sensorActive ), but IS there now ( handPresent )
     if (handPresent && !sensorActive[x]) {
-       sensorActive[x] = true; // Mark as covered
-       checkNoteHit(x);        // Fire logic
+       sensorActive[x] = true;
+       checkNoteHit(x);
     }
-    // Reset state if hand leaves
     else if (!handPresent) {
        sensorActive[x] = false;
     }
