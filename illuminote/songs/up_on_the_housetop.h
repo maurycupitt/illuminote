@@ -1,0 +1,14 @@
+#ifndef UP_ON_THE_HOUSETOP_H
+#define UP_ON_THE_HOUSETOP_H
+
+const byte SONG_UP_ON_THE_HOUSETOP_NOTES[] = {62, 64, 67, 69, 71, 72, 74, 76};
+
+const byte SONG_UP_ON_THE_HOUSETOP[] PROGMEM = {
+  74, 74, 76, 74, 71, 67, 71, 74, 76, 76, 74, 71, 69, 74, 74, 74, 74, 76, 74, 71, 69, 67, 71, 74, 76, 76, 76, 74, 74, 71, 69, 74,
+  67, 72, 72, 76, 74, 74, 74, 71, 69, 69, 72, 71, 74, 74, 67, 71, 74, 74, 76, 74, 71, 72, 74, 76, 74, 74, 76, 74, 71, 71, 69, 74,
+  67, 69, 74, 67
+};
+
+const int SONG_UP_ON_THE_HOUSETOP_LENGTH = sizeof(SONG_UP_ON_THE_HOUSETOP);
+
+#endif
