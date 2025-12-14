@@ -25,7 +25,10 @@ void controlChange(byte channel, byte control, byte value) {
 #define MIDI_NOTES_COUNT 127
 
 // Select song by including the appropriate header file
-#include "songs/away_in_a_manger.h"
+// #include "songs/away_in_a_manger.h"
+// #include "songs/joy_to_the_world.h"
+#include "songs/o_come_all_ye_faithful.h"
+
 
 QWIICMUX myMux;
 VL53L1X distanceSensors[NUM_SENSORS];
