@@ -94,7 +94,7 @@ This outputs a comma-separated list of MIDI note numbers ready to paste into the
 ## Directory Structure
 
 ```
-silentnight-2025/
+illuminote/
 ├── away_in_a_manger_2025/     # Current Arduino sketch
 │   └── away_in_a_manger_2025.ino
 ├── midi-songs/                 # Song files in various formats
